@@ -6,12 +6,9 @@ public class RoboBase extends AdvancedRobot
 {
 	public void run() {
 		setColors(Color.red, Color.black, Color.black,Color.red, Color.green);
-		
+		setScanColor(Color.green);
 		while(true) {
-			//turnRadarRightRadians(Math.PI / 4);
-			turnGunRight(360);
-			
-			
+			turnRadarRight(20);
 
 		}
 	}
@@ -19,14 +16,17 @@ public class RoboBase extends AdvancedRobot
 
 	public void onScannedRobot(ScannedRobotEvent e) {
 		double enemyDistance = e.getDistance();
-		double enemyBearing = e.getBearing();
 		
-			System.out.println(enemyDistance);
-			System.out.println(enemyBearing);
-		if (enemyDistance < 135) {
-			fire(3);
-		}else{
+		//Se está muito próximo
+		if (enemyDistance < 800) {
+			
+			// Calcule a quantidade de graus necessária para virar o canhão em direção ao inimigo
+       		 double angleToEnemy = getHeading() + e.getBearing() - getGunHeading();
+        
+        // Gire o canhão na direção do inimigo
+        	setTurnGunRight(angleToEnemy);
 			fire(1);
+			System.out.println("Bearing: "+ e.getBearing());
 		}
 	}
 
