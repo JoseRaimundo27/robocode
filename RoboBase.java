@@ -18,7 +18,8 @@ public class RoboBase extends AdvancedRobot
 		double enemyDistance = e.getDistance();
 		
 		//Se está muito próximo
-		if (enemyDistance < 100) {
+		if (enemyDistance < 1200) {
+			setTurnRadarRight(getHeading() + e.getBearing() - getRadarHeading());
 			
 			// Calcule a quantidade de graus necessária para virar o canhão em direção ao inimigo
        		 double angleToEnemy = getHeading() + e.getBearing() - getGunHeading();
