@@ -1,23 +1,28 @@
 package robos;
 import robocode.*;
+import java.awt.Color;
 
 public class RoboBase extends AdvancedRobot
 {
-
 	public void run() {
-
+		setColors(Color.red, Color.black, Color.black,Color.red, Color.green);
+		
 		while(true) {
-			// Replace the next 4 lines with any behavior you would like
-			ahead(100);
+			//turnRadarRightRadians(Math.PI / 4);
 			turnGunRight(360);
-			back(100);
-			turnGunRight(360);
+			
+			
+
 		}
 	}
 
 
 	public void onScannedRobot(ScannedRobotEvent e) {
 		double enemyDistance = e.getDistance();
+		double enemyBearing = e.getBearing();
+		
+			System.out.println(enemyDistance);
+			System.out.println(enemyBearing);
 		if (enemyDistance < 135) {
 			fire(3);
 		}else{
