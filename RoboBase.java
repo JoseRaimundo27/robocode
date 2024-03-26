@@ -9,24 +9,40 @@ public class RoboBase extends AdvancedRobot
 		setScanColor(Color.green);
 		while(true) {
 			turnRadarRight(20);
-
 		}
 	}
 
-
 	public void onScannedRobot(ScannedRobotEvent e) {
-		double enemyDistance = e.getDistance();
+		double distanciaInimigo = e.getDistance();
+		double anguloRadar = getHeading() + e.getBearing() - getRadarHeading();
+		double anguloCanhao = getHeading() + e.getBearing() - getGunHeading();
 		
-		//Se está muito próximo
-		if (enemyDistance < 100) {
-			
-			// Calcule a quantidade de graus necessária para virar o canhão em direção ao inimigo
-       		 double angleToEnemy = getHeading() + e.getBearing() - getGunHeading();
+		//Gira o robô em direção ao inimigo
+		setTurnRight(e.getBearing());
+		ahead(100);
+		
+         // Gire o radar na direção do inimigo
+        setTurnRadarRight(anguloRadar);
         
         // Gire o canhão na direção do inimigo
-        	setTurnGunRight(angleToEnemy);
-			fire(1);
-			System.out.println("Bearing: "+ e.getBearing());
+        setTurnGunRight(anguloCanhao);
+		
+		//Se está muito próximo
+		if (distanciaInimigo <= 80) {
+       		setTurnGunRight(anguloCanhao);
+        	fire(3);
+		}
+		else if (distanciaInimigo <= 200 && distanciaInimigo > 80) {
+       		setTurnGunRight(anguloCanhao);
+        	fire(2);
+		}
+		else if (distanciaInimigo <= 500 && distanciaInimigo > 200) {
+       		setTurnGunRight(anguloCanhao);
+        	fire(1.5);
+		}
+		else if (distanciaInimigo <= 1000 && distanciaInimigo > 500) {
+       		setTurnGunRight(anguloCanhao);
+        	fire(1);
 		}
 	}
 
