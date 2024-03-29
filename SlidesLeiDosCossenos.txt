@@ -1,0 +1,6 @@
+SLIDE 1) Eu tenho  o meu robo e o inimigo se movendo em uma direção por causa de seus getHeadings. Os get Headings são graus absolutos
+SLIDE 2) Queremos realizar a predição do ponto futuro do robo inimigo. Sabemos que a distancia é getDistance e ele se move com getVelocity pixels por turno, então em um turno a distancia será de getVelocity
+SLIDE 3) Vamos analisar o robo como se o nosso estivesse com a orientação voltada para cima. Portanto subtrairemos da formula do angulo do canhão o nosso getGunHeading e faremos a análise como se estivesse sempre na posição inicial.
+SLIDE 4) Para aplicar lei dos cossenos, precisamos saber o valor dos três lados do triangulo. Falta o lado da Predição. Usando a classe Rules do robocode, podemos estimar a distancia através de Rules.getBulletSpeed em pixels/turn
+
+Não funciona a lei dos cossenos com TURN = 1, preciso de mais turns para acertar. Vamos calcular os Turns!

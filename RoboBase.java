@@ -9,10 +9,7 @@ public class RoboBase extends AdvancedRobot
 		setColors(Color.red, Color.black, Color.black,Color.red, Color.green);
 
 		while(true) {
-		//System.out.println("Height:" + getBattleFieldHeight());
-		//System.out.println("Width:" + getBattleFieldWidth());
-		//System.out.println("X:" + getX());
-	//	System.out.println("Y:" + getY());
+			checaWall();
 			turnRadarRight(20);
 		}
 	}
@@ -20,45 +17,41 @@ public class RoboBase extends AdvancedRobot
 	public void onScannedRobot(ScannedRobotEvent e) {
 		double distanciaInimigo = e.getDistance();
 		double anguloRadar = getHeading() + e.getBearing() - getRadarHeading();
-		double anguloCanhao = getHeading() + e.getBearing() - getGunHeading();
-
-		//Gira o robô em direção ao inimigo
-		setTurnRight(e.getBearing());
+		
 		
          // Gire o radar na direção do inimigo
         setTurnRadarRight(anguloRadar);   
 		
-		ahead(100);
 		//Se está muito próximo
-		if (distanciaInimigo <= 80) {
-       		algoritmoAtaquePerto(anguloCanhao);
+		if (distanciaInimigo <= 100) {
+       		algoritmoAtaquePerto(e.getBearing());
 		}
-		else if (distanciaInimigo <= 200 && distanciaInimigo > 80) {
-       		setTurnGunRight(anguloCanhao);
-        	fire(2);
+		else if (distanciaInimigo <= 140 && distanciaInimigo > 200) {
+       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(),8.5);
+       
 		}
-		else if (distanciaInimigo <= 500 && distanciaInimigo > 200) {
-       		setTurnGunRight(anguloCanhao);
-        	fire(1.5);
+		else if (distanciaInimigo <= 400 && distanciaInimigo > 200) {
+       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 17);
 		}
-		else if (distanciaInimigo <= 1000 && distanciaInimigo > 500) {
-       		setTurnGunRight(anguloCanhao);
-        	fire(1);
+		else if (distanciaInimigo <= 800 && distanciaInimigo > 400) {
+       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 33);
 		}
+		else if (distanciaInimigo <= 1000 && distanciaInimigo > 800) {
+       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 41);
+		}
+		
+	
 	}
 
 	public void onHitByBullet(HitByBulletEvent e) {
 		double anguloBullet = e.getBearing();
-		//System.out.println("Bearing bullet: " + e.getBearing());
 		if(anguloBullet >= -90 && anguloBullet <=90){
 			algoritmoFuga();
 		}
-		//else{
-		//}
+	
 		
 	}
 	
-
 	public void onHitWall(HitWallEvent e) {
 		checaWall();
 	}	
@@ -69,15 +62,17 @@ public class RoboBase extends AdvancedRobot
 	
 		double anguloEnemy = e.getBearing();
 		double anguloCanhao = getHeading() + e.getBearing() - getGunHeading();
-		if(anguloEnemy >= -90 && anguloEnemy <=90){
-			algoritmoAtaquePerto(anguloCanhao);
-		}else{
-			algoritmoFuga();
-		}
+	
 	}
 	
 	public void checaWall(){
-		//Checar se os valores estão na faixa permitida para não chocar wall
+		double positionX = getX();
+		double positionY = getY();
+		
+		if(positionX < 19 || positionY < 19 || positionX > 781 || positionY > 582 ){
+			setTurnRight(180); //Dar meia volta!
+		}
+		
 	}
 	
 	public void algoritmoFuga(){
@@ -85,12 +80,45 @@ public class RoboBase extends AdvancedRobot
 		ahead(100);
 	}
 	
-	public void algoritmoAtaqueDistancia(){
+	public void algoritmoAtaqueDistancia(double bearing, double distance, double velocity, double turns){
+		double a = Rules.getBulletSpeed(3) * turns;
+		double b = velocity * turns;
+		double c = distance;
+		double c2 = distance*distance;
+		double a2 = a*a;
+		double b2 = b*b;
+		
+		double teta = Math.toDegrees(Math.acos((a2+c2-b2)/(2*a*c)));
+		
+		if (!Double.isNaN(teta)){
+			double sum = bearing + teta;
+			
+			System.out.println("HEADING: " + getHeading());
+			setTurnRight(-getHeading());
+			setTurnGunRight(-getGunHeading());
+			
+			System.out.println("GUN: " + getGunHeading());
+			System.out.println("BEARING: " + bearing);
+			System.out.println("VELOCITY: " + velocity);
+			System.out.println("TETA: " + teta);
+			System.out.println("Bearing + teta: " + sum);
+			
+			if (sum > 0) {
+				turnGunRight(-getGunHeading());
+				turnGunRight(sum);
+			}else if (sum < 0 ){
+				turnGunRight(-getGunHeading());
+				turnGunLeft(-sum);
+			}
+			fire(1);
+		} 
+		
 		
 	}
 	
-	public void algoritmoAtaquePerto(double anguloCanhao){
+	public void algoritmoAtaquePerto(double bearing){
+		double anguloCanhao = getHeading() + bearing - getGunHeading();
 		setTurnGunRight(anguloCanhao);
-        fire(3);
+        setFire(3);
 	}
 }
