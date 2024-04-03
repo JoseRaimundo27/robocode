@@ -24,20 +24,20 @@ public class RoboBase extends AdvancedRobot
 		
 		//Se está muito próximo
 		if (distanciaInimigo <= 100) {
-       		algoritmoAtaquePerto(e.getBearing());
+       		algoritmoAtaque(e.getBearing(), e.getHeading(), e.getDistance(),e.getVelocity(),6,3); //Usar Fire(3) e 6 turnos
 		}
 		else if (distanciaInimigo <= 140 && distanciaInimigo > 200) {
-       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(),8.5);
-       
+       		algoritmoAtaque(e.getBearing(), e.getHeading(), e.getDistance(),e.getVelocity(),10,2);//Usar Fire(2) e 10 turnos
+   
 		}
 		else if (distanciaInimigo <= 400 && distanciaInimigo > 200) {
-       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 17);
+       		algoritmoAtaque(e.getBearing(), e.getHeading(), e.getDistance(),e.getVelocity(), 25,2);//Usar Fire(2) e 25 turnos
 		}
 		else if (distanciaInimigo <= 800 && distanciaInimigo > 400) {
-       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 33);
+       		algoritmoAtaque(e.getBearing(),e.getHeading(), e.getDistance(),e.getVelocity(), 33,1); //Usar Fire(1) e 33 turnos
 		}
 		else if (distanciaInimigo <= 1000 && distanciaInimigo > 800) {
-       		algoritmoAtaqueDistancia(e.getBearing(), e.getDistance(),e.getVelocity(), 41);
+       		algoritmoAtaque(e.getBearing(),e.getHeading(),e.getDistance(),e.getVelocity(), 41,1);//Usar Fire(1) e 41 turnos
 		}
 		
 	
@@ -80,8 +80,8 @@ public class RoboBase extends AdvancedRobot
 		ahead(100);
 	}
 	
-	public void algoritmoAtaqueDistancia(double bearing, double distance, double velocity, double turns){
-		double a = Rules.getBulletSpeed(3) * turns;
+	public void algoritmoAtaque(double enemyBearing, double enemyHeading, double distance, double velocity, double turns, double bulletSpeed){
+		double a = Rules.getBulletSpeed(bulletSpeed) * turns;
 		double b = velocity * turns;
 		double c = distance;
 		double c2 = distance*distance;
@@ -91,26 +91,36 @@ public class RoboBase extends AdvancedRobot
 		double teta = Math.toDegrees(Math.acos((a2+c2-b2)/(2*a*c)));
 		
 		if (!Double.isNaN(teta)){
-			double sum = bearing + teta;
 			
-			System.out.println("HEADING: " + getHeading());
-			setTurnRight(-getHeading());
-			setTurnGunRight(-getGunHeading());
-			
-			System.out.println("GUN: " + getGunHeading());
-			System.out.println("BEARING: " + bearing);
-			System.out.println("VELOCITY: " + velocity);
-			System.out.println("TETA: " + teta);
-			System.out.println("Bearing + teta: " + sum);
-			
-			if (sum > 0) {
-				turnGunRight(-getGunHeading());
-				turnGunRight(sum);
-			}else if (sum < 0 ){
-				turnGunRight(-getGunHeading());
-				turnGunLeft(-sum);
+			setTurnGunRight(-getGunHeading()); //Zera o eixo do canhão
+			setTurnRight(-getHeading()); //Zera o eixo do tanque
+		
+			if(enemyBearing < 0 && (enemyHeading > 0  && enemyHeading < 90) || (enemyHeading > 270  && enemyHeading < 360)){ //Na esquerda e tem q subtrair angulos
+				double sum = enemyBearing - teta;
+				setTurnGunRight(sum);
+				fire(bulletSpeed);
+				System.out.println("1");
 			}
-			fire(1);
+			else if (enemyBearing < 0 && enemyHeading >= 90  && enemyHeading <=270){
+				double sum = enemyBearing  + teta;
+				setTurnGunRight(sum);
+				fire(bulletSpeed);
+				System.out.println("2");
+			}
+			
+			else if (enemyBearing > 0 && (enemyHeading > 0  && enemyHeading <= 180)){ //Se está a direita
+				double sum = enemyBearing + teta;
+				setTurnGunRight(sum);
+				fire(bulletSpeed);
+				System.out.println("3");
+			}
+			else if (enemyBearing > 0 && (enemyHeading > 180  && enemyHeading < 360)){ //Se está a direita
+				double sum = enemyBearing - teta;
+				setTurnGunRight(sum);
+				fire(bulletSpeed);
+				System.out.println("4");
+			}
+			
 		} 
 		
 		

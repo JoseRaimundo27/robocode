@@ -1,0 +1,9 @@
+-Aplicar parametro de força na bala ( realizar novos calculos para bullet com 3 power e 2 power e aumentar heuristicas)
+
+-A direção do tiro vai depender do  0 < e.getHeading() < 180 ou 180 < e.getHeading() < 360 (Fazer análise se é isso)
+
+-Algoritmo Fuga
+
+-Melhorar Checa wall
+
+-Algoritmo Andar naturalmente
